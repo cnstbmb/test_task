@@ -1,0 +1,29 @@
+{
+  "name": "new-work",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "@types/node": "^7.0.22",
+    "@types/pg": "^6.1.40",
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "jade": "~1.11.0",
+    "morgan": "~1.8.1",
+    "pg": "^6.2.2",
+    "serve-favicon": "~2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^7.0.18",
+    "amqplib": "^0.5.1",
+    "pg": "^6.2.2",
+    "shortid": "^2.2.8",
+    "sync": "^0.2.5",
+    "typescript": "^2.3.2",
+    "url": "^0.11.0"
+  }
+}

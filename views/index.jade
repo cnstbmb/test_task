@@ -1,0 +1,73 @@
+extends layout
+
+block content
+  div(ng-app="statApp" ng-controller="statCtrl")
+    button(ng-click="showElem = !showElem" ng-init="showElem=true") Сменить вид
+    table(ng-hide="showElem")
+        tr
+            td Количество принятых сообщений
+            td Количество ошибок
+            td Количество запросов
+        tr
+            td {{messagesData.numbers_messages[0].count}}
+            td {{messagesData.numbers_errors[0].count}}
+            td {{messagesData.numbers_events[0].count}}
+    div(id="pieChart" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto" ng-hide="!showElem")
+
+  script.
+    var app = angular.module('statApp', []);
+    app.controller('statCtrl', function($scope, $http) {
+      $http.get("/ajax_stat")
+        .then(function (response) {
+            let data = response.data;
+            console.log(data);
+            $scope.messagesData= data;
+
+            let numbers_messages = parseInt(data.numbers_messages[0].count);
+            let numbers_errors = parseInt(data.numbers_errors[0].count);
+            let numbers_events = parseInt(data.numbers_events[0].count);
+            Highcharts.chart('pieChart', {
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Инфо'
+                },
+                tooltip: {
+                    pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.y}',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Сообщения',
+                    colorByPoint: true,
+                    data: [{
+                        name: 'Количество принятых сообщений',
+                        y: numbers_messages,
+                        sliced: true,
+                        selected: true
+                    }, {
+                        name: 'Количество ошибок',
+                        y: numbers_errors
+                    }, {
+                        name: 'Количество запросов',
+                        y: numbers_events
+                    }]
+                }]
+            });
+        });
+    });
