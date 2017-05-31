@@ -1,4 +1,4 @@
-import pg = require('pg');
+const pg = require('pg');
 const Sync = require('sync');
 const config = require('../configs/main.json');
 const pgConfig: object = {
@@ -12,12 +12,11 @@ const pgConfig: object = {
     ssl: config.dbConfig.ssl,
 };
 
-declare type dbResponse = {
+interface dbResponse {
     result : {
         rows : object
     }
-
-};
+}
 
 class Postgresql{
 

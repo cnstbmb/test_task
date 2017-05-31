@@ -24,7 +24,7 @@ class Consumer{
 
         console.log(this.timeGroup, Date());
 
-        this.startReceivingMessages();
+        // this.startReceivingMessages();
     }
 
     /**
@@ -72,4 +72,4 @@ class Consumer{
     }
 }
 
-let consumer = new Consumer();
+export = Consumer;

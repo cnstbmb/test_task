@@ -6,13 +6,7 @@ import Postgres = require('../my_modules/postgresql');
 const postgres = new Postgres();
 const config = require('../configs/main.json');
 const Rabbit = require('../my_modules/rabbitMq');
-const shortid = require('shortid');
-
-shortid.characters(config.shortidCharacters);
 const rabbit = new Rabbit();
-const port = process.argv[2];
-const producerId: string = (shortid.generate() + '_' + port);
-const server = http.createServer().listen(port);
 
 interface incomingMessageConfig {
 
@@ -27,9 +21,8 @@ class DataHandler{
     query : string;
     producerId: string;
 
-    constructor(producerId: string, requestData: {url: string}){
+    constructor(producerId: string){
         this.producerId = producerId;
-        this.getData(requestData);
     }
 
     /**
@@ -139,13 +132,4 @@ class DataHandler{
     }
 }
 
-console.log('Starting producer');
-
-server.on('request', (request: any, response: any) => {
-    let handler = new DataHandler(producerId, request);
-    let dataIsOk: boolean = handler.checkData();
-    let message: string = dataIsOk ? 'Приняты корректные входные данные.' : 'Не корректные входные данные';
-    if(dataIsOk)
-        handler.sendDataToRabbit();
-    response.end(message);
-});
+export = DataHandler;
