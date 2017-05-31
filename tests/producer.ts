@@ -6,7 +6,7 @@ shortid.characters(config.shortidCharacters);
 
 describe('Проверяем работу класса DataHandler, "/rabbitApp/producer.ts"', ()=>{
 
-    const producerId: string = shortid.generate();
+    const producerId: any = shortid.generate();
     let producer = new DataHandler(producerId);
 
     describe('Проверяем работу конструктора', ()=>{
@@ -16,12 +16,19 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
     });
 
     describe('Проверяем работу фукнции getData()', ()=>{
-        interface incomingData{url: string}
 
-        let testDataArray: [incomingData] = [
+        let testDataArray: [any] = [
+            '',
+            {},
+            [],
+            {url: null},
+            {url: undefined},
+            {url: 0},
+            {url: []},
+            {url: {}},
             {url: ''},
-            {url: '  data: \' {"id":111, "group":7,  "text":”группа №seven"}\' }'},
-            {url: '{ data: "" }'}
+            {url: 'data=%20{%22id%22:111,%20%22group%22:7,%20%20%22text%22:%E2%80%9D%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20%E2%84%96three%22}'},
+            // {url: '/?data=%20{%22id%22:111,%20%22group%22:7,%20%20%22text%22:%E2%80%9D%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20%E2%84%96three%22}'}
         ];
 
         for (let testData of testDataArray){

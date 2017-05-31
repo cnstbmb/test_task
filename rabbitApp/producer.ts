@@ -83,6 +83,11 @@ class DataHandler{
      * @param request - string
      */
     getData(request: {url: string}):boolean{
+        if(typeof request.url != "string"){
+            this.brokenData = true;
+            return this.brokenData;
+        }
+
         let data : Url.Url = url.parse(request.url, true);
 
         try {
