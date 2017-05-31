@@ -19,7 +19,7 @@ declare class DataHandler {
      */
     getData(request: {
         url: string;
-    }): void;
+    }): boolean;
     /**
      * Проверяем входные данные. Соотвествует ли JSON заданному стандарту.
      * @returns {boolean}

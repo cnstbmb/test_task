@@ -1,5 +1,6 @@
 import url = require('url');
 import Postgres = require('../my_modules/postgresql');
+import * as Url from "url";
 
 const postgres = new Postgres();
 const config = require('../configs/main.json');
@@ -81,16 +82,18 @@ class DataHandler{
      * Получаем данные из запроса. Преобразовываем в JSON.
      * @param request - string
      */
-    getData(request: {url: string}):void{
-        this.query = url.parse(request.url, true).query.data.replace(/'/g, "\"").replace(/”/g, "\"");
+    getData(request: {url: string}):boolean{
+        let data : Url.Url = url.parse(request.url, true);
 
-        try{
+        try {
+            this.query = data.query.data.replace(/'/g, "\"").replace(/”/g, "\"");
             this.data = JSON.parse(this.query);
-        }
-        catch(e){
+        }catch (e){
             console.error(e);
             this.brokenData = true;
         }
+
+        return this.brokenData;
     }
 
     /**
