@@ -23,8 +23,6 @@ class Consumer{
         this.determineTimeGroup();
 
         console.log(this.timeGroup, Date());
-
-        // this.startReceivingMessages();
     }
 
     /**

@@ -1,6 +1,4 @@
-import {type} from "os";
 import url = require('url');
-import http = require('http');
 import Postgres = require('../my_modules/postgresql');
 
 const postgres = new Postgres();
@@ -9,14 +7,15 @@ const Rabbit = require('../my_modules/rabbitMq');
 const rabbit = new Rabbit();
 
 interface incomingMessageConfig {
-
     id: number;
     group: number;
     text: string;
+    [key: number]: string;
 }
 
+
 class DataHandler{
-    data: incomingMessageConfig;
+    private data: incomingMessageConfig;
     brokenData : boolean = false;
     query : string;
     producerId: string;
