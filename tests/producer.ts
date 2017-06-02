@@ -15,7 +15,7 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
         });
     });
 
-    describe('Проверяем работу фукнции getData() и checkJSON()', ()=>{
+    describe('Проверяем работу фукнций getData(); checkData(); checkJSON(); sendDataToRabbit()', ()=>{
 
         let testDataArray: [any] = [
             '',
@@ -44,7 +44,7 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
             });
 
             it('Проверяем функцию sendDataToRabbit()',()=>{
-                let result: boolean = producer.checkData();
+                let result: boolean = producer.sendDataToRabbit();
                 assert.isFalse(result);
             });
         }
@@ -62,7 +62,7 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
         });
 
         it('Проверяем функцию sendDataToRabbit()',()=>{
-            let result: boolean = producer.checkData();
+            let result: boolean = producer.sendDataToRabbit();
             assert.isTrue(result);
         });
     });
