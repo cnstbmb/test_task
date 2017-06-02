@@ -15,7 +15,5 @@ server.on('request', (request: any, response: any) => {
     handler.getData(request);
     let dataIsOk: boolean = handler.checkData();
     let message: string = dataIsOk ? 'Приняты корректные входные данные.' : 'Не корректные входные данные';
-    if(dataIsOk)
-        handler.sendDataToRabbit();
     response.end(message);
 });

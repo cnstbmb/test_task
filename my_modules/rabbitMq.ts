@@ -45,7 +45,12 @@ class Rabbit{
     }
 
     publishMessage(queue: string, message: any){
-        this.channel.publish(this.exchange, queue, new Buffer(message), {'timestamp':Date.now()});
+        Sync(()=>{
+            if(typeof this.channel == 'undefined'){
+                this.establishConnection();
+            }
+            this.channel.publish(this.exchange, queue, new Buffer(message), {'timestamp':Date.now()});
+        });
     }
 
     startReceivingMessages(queue:string){

@@ -93,6 +93,7 @@ class DataHandler{
         try {
             this.query = data.query.data.replace(/'/g, "\"").replace(/”/g, "\"");
             this.data = JSON.parse(this.query);
+            this.brokenData = false;
         }catch (e){
             console.error(e);
             this.brokenData = true;
@@ -123,7 +124,12 @@ class DataHandler{
             return false;
         }
 
-        return this.checkJSON()
+        let dataIsOk: boolean = this.checkJSON();
+
+        if(dataIsOk){
+            this.sendDataToRabbit();
+        }
+        return dataIsOk;
 
     };
 
@@ -131,11 +137,16 @@ class DataHandler{
      * Отправялем полученные данные в rabbitMq
      */
     sendDataToRabbit(){
-        let queue: string = String(this.data.group);
+        if(typeof this.data == 'undefined' || typeof this.data.group == 'undefined'){
+            return false;
+        }
+
         let data: string = JSON.stringify(this.data);
+        let queue: string = String(this.data.group);
 
         rabbit.publishMessage(queue, data);
         postgres.write("INSERT INTO event_counter (producer_name) VALUES (\'"+this.producerId+"\');");
+        return true;
     }
 }
 

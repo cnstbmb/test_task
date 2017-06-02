@@ -28,6 +28,6 @@ declare class DataHandler {
     /**
      * Отправялем полученные данные в rabbitMq
      */
-    sendDataToRabbit(): void;
+    sendDataToRabbit(): boolean;
 }
 export = DataHandler;

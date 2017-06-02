@@ -1,5 +1,3 @@
-import {type} from "os";
-import {start} from "repl";
 const rabbit = require('../my_modules/rabbitMq');
 
 class Consumer{

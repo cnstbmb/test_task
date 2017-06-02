@@ -15,7 +15,7 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
         });
     });
 
-    describe('Проверяем работу фукнции getData()', ()=>{
+    describe('Проверяем работу фукнции getData() и checkJSON()', ()=>{
 
         let testDataArray: [any] = [
             '',
@@ -28,7 +28,6 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
             {url: {}},
             {url: ''},
             {url: 'data=%20{%22id%22:111,%20%22group%22:7,%20%20%22text%22:%E2%80%9D%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20%E2%84%96three%22}'},
-            // {url: '/?data=%20{%22id%22:111,%20%22group%22:7,%20%20%22text%22:%E2%80%9D%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20%E2%84%96three%22}'}
         ];
 
         for (let testData of testDataArray){
@@ -38,6 +37,33 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
                 assert.isTrue(producer.brokenData);
                 assert.isTrue(result);
             });
+
+            it('Проверяем функцию checkJSON()', ()=>{
+                let result: boolean = producer.checkData();
+                assert.isFalse(result);
+            });
+
+            it('Проверяем функцию sendDataToRabbit()',()=>{
+                let result: boolean = producer.checkData();
+                assert.isFalse(result);
+            });
         }
+
+        it('Передали корректные данные', ()=>{
+            let testData = {url: '/?data=%20{%22id%22:111,%20%22group%22:7,%20%20%22text%22:%E2%80%9D%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B0%20%E2%84%96three%22}'}
+            let result: boolean = producer.getData(testData);
+            assert.isString(producer.query);
+            assert.isFalse(result);
+        });
+
+        it('Проверяем функцию checkJSON()', ()=>{
+            let result: boolean = producer.checkData();
+            assert.isTrue(result);
+        });
+
+        it('Проверяем функцию sendDataToRabbit()',()=>{
+            let result: boolean = producer.checkData();
+            assert.isTrue(result);
+        });
     });
 });
