@@ -62,6 +62,11 @@ CREATE TABLE messages (
     message text
 );
 
+CREATE TABLE sys_error (
+    error_text text,
+    error_time timestamp without time zone DEFAULT now()
+);
+
 ALTER TABLE ONLY error_events ALTER COLUMN event_id SET DEFAULT nextval('error_events_event_id_seq'::regclass);
 
 SELECT pg_catalog.setval('error_events_event_id_seq', 39, true);

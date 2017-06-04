@@ -1,5 +1,6 @@
 declare class Consumer {
     interval: number;
+    minAtmsec: number;
     date: Date;
     minute: number;
     sec: number;
@@ -7,6 +8,7 @@ declare class Consumer {
     timestamp: number;
     timeGroup: number;
     rabbit: any;
+    intervalId: object;
     constructor();
     /**
      * Определить какая в данный момент временная группа. Необходимо для корректного получения сообщений
@@ -15,7 +17,7 @@ declare class Consumer {
     /**
      * Приступить к получению сообщений из rabbit
      */
-    startReceivingMessages(): void;
+    startReceivingMessages(): object;
     /**
      * Сменить группу мониторинга.
      */

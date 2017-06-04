@@ -72,8 +72,13 @@ class Rabbit{
     }
 
     stopReceivingMessages(){
-        console.log('отключаемся от очереди c тэгом', this.consumerTag, Date());
-        this.channel.cancel(this.consumerTag);
+        Sync(()=>{
+            if(typeof this.channel == 'undefined'){
+                this.establishConnection();
+            }
+            console.log('отключаемся от очереди c тэгом', this.consumerTag, Date());
+            this.channel.cancel(this.consumerTag);
+        });
     }
 }
 

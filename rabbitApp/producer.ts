@@ -1,6 +1,7 @@
 import url = require('url');
 import Postgres = require('../my_modules/postgresql');
 import * as Url from "url";
+import errorParser = require('error-stack-parser');
 
 const postgres = new Postgres();
 const config = require('../configs/main.json');
@@ -95,7 +96,8 @@ class DataHandler{
             this.data = JSON.parse(this.query);
             this.brokenData = false;
         }catch (e){
-            console.error(e);
+            let error : any = JSON.stringify(errorParser.parse(e));
+            postgres.write("INSERT INTO sys_error (error_text) VALUES (\'"+error+"\')");
             this.brokenData = true;
         }
 
@@ -136,7 +138,7 @@ class DataHandler{
     /**
      * Отправялем полученные данные в rabbitMq
      */
-    sendDataToRabbit(){
+    sendDataToRabbit():boolean{
         if(typeof this.data == 'undefined' || typeof this.data.group == 'undefined'){
             return false;
         }

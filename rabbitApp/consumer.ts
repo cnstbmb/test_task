@@ -1,7 +1,11 @@
+import Postgres = require('../my_modules/postgresql');
 const rabbit = require('../my_modules/rabbitMq');
+
+const postgres = new Postgres();
 
 class Consumer{
     interval: number = 5;
+    minAtmsec: number = 60000;
     date: Date;
     minute:number;
     sec:number;
@@ -9,6 +13,7 @@ class Consumer{
     timestamp:number;
     timeGroup : number;
     rabbit: any = new rabbit();
+    intervalId: object;
     
 
     constructor(){
@@ -26,15 +31,22 @@ class Consumer{
     /**
      * Определить какая в данный момент временная группа. Необходимо для корректного получения сообщений
      */
-    determineTimeGroup(){
-        let intermediateValue = this.minute / this.interval;
+    determineTimeGroup():void{
+        let minute: number = this.minute;
+        if(minute > 60){
+            let message: string = 'По непонятной причине, this.getMinutes() вернул значение больше 60! ' +
+                'устанавливаем значение 60.такой момент маловероятен.';
+            postgres.write("INSERT INTO sys_error (error_text) VALUES (\'"+message+"\')");
+            minute = 60;
+        }
+        let intermediateValue = minute / this.interval;
         this.timeGroup = intermediateValue - intermediateValue%1 + 1;
     }
 
     /**
      * Приступить к получению сообщений из rabbit
      */
-    startReceivingMessages(){
+    startReceivingMessages():object{
         let nextGroup: number = this.timeGroup;
         let nextBoundaryTime: number = nextGroup * this.interval;
         let startTime: number = nextBoundaryTime * 60000 - this.timestamp;
@@ -42,8 +54,7 @@ class Consumer{
         console.log('Оставшееся время мониторим группу №', this.timeGroup, Date());
         this.rabbit.startReceivingMessages(String(this.timeGroup));
         this.timeGroup++;
-        setTimeout(()=>{this.startSetInterval()}, startTime);
-
+        return setTimeout(()=>{this.startSetInterval()}, startTime);
     }
 
     /**
@@ -56,15 +67,15 @@ class Consumer{
     /**
      * Приступить к получению сообщений из текущий группы, с дальнешим переходом по следующим группам.
      */
-    startSetInterval(){
+    startSetInterval():void{
         this.rabbit.stopReceivingMessages();
         this.rabbit.startReceivingMessages(String(this.timeGroup));
         this.checkAndAutoIncrementGroup();
-        setInterval(()=>{
+        this.intervalId = setInterval(()=>{
             this.rabbit.stopReceivingMessages();
             this.rabbit.startReceivingMessages(String(this.timeGroup));
             this.checkAndAutoIncrementGroup();
-        }, this.interval*60000)
+        }, this.interval*this.minAtmsec);
     }
 }
 

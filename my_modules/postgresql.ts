@@ -1,3 +1,4 @@
+import errorParser = require('error-stack-parser');
 const pg = require('pg');
 const Sync = require('sync');
 const config = require('../configs/main.json');
@@ -24,9 +25,11 @@ class Postgresql{
 
     constructor(){
         Sync(()=>{
-            if(!this.isConnected())this.client = pg.connect.sync(pg, pgConfig)[0];
-        }, (err: object)=>{
-            if (err)console.log(err);
+            if(!this.isConnected()){
+                this.client = pg.connect.sync(pg, pgConfig)[0];
+            }
+        }, (err: Error)=>{
+            if (err)console.error(err);
         });
     }
 
@@ -38,12 +41,15 @@ class Postgresql{
         return null != this.client;
     }
 
-    read(query: string, cb){
+    read(query: string, cb:any):void{
         Sync(()=>{
             if(!this.isConnected())this.client = pg.connect.sync(pg, pgConfig)[0];
             return this.client.query.sync(this.client, query);
-        }, (err: object, response: object)=>{
-            if (err)console.log(err);
+        }, (err: Error, response: object)=>{
+            if (err){
+                let error : any = JSON.stringify(errorParser.parse(err));
+                this.client.query("INSERT INTO sys_error (error_text) VALUES (\'"+error+"\')");
+            }
             cb(response);
         });
     }
@@ -52,7 +58,7 @@ class Postgresql{
      * Получить сообщения и данные о сообщениях из ДБ.
      * @param cb - полученные данные передаем в коллбэк
      */
-    getRabbitEventsData(cb){
+    getRabbitEventsData(cb:any):void{
         Sync(()=> {
             if (!this.isConnected()) this.client = pg.connect.sync(pg, pgConfig)[0];
             let messages: dbResponse = this.client.query.future(this.client, 'SELECT * FROM messages;');
@@ -65,8 +71,11 @@ class Postgresql{
                 'numbers_errors': numbers_errors.result.rows,
                 'numbers_events': numbers_events.result.rows
             }
-        }, (err: object, result: object)=> {
-            if (err) console.log(err);
+        }, (err: Error, result: object)=> {
+            if (err){
+                let error : any = JSON.stringify(errorParser.parse(err));
+                this.client.query("INSERT INTO sys_error (error_text) VALUES (\'"+error+"\')");
+            }
             cb(result);
         });
     }
@@ -80,8 +89,11 @@ class Postgresql{
         Sync(()=>{
             if(!this.isConnected())this.client = pg.connect.sync(pg, pgConfig)[0];
             this.client.query(query);
-        }, (err: object)=>{
-            if (err)console.log(err);
+        }, (err: Error)=>{
+            if (err){
+                let error : any = JSON.stringify(errorParser.parse(err));
+                this.client.query("INSERT INTO sys_error (error_text) VALUES (\'"+error+"\')");
+            }
         });
     }
 }

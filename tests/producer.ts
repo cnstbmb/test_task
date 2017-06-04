@@ -1,4 +1,4 @@
-import {expect, assert} from 'chai';
+import {assert} from 'chai';
 import DataHandler = require('../rabbitApp/producer');
 const shortid = require('shortid');
 const config = require('../configs/main.json');
@@ -10,8 +10,11 @@ describe('Проверяем работу класса DataHandler, "/rabbitApp/
     let producer = new DataHandler(producerId);
 
     describe('Проверяем работу конструктора', ()=>{
+        it('Проверяем экземпляр класса.', ()=>{
+            assert.instanceOf(producer, DataHandler);
+        });
         it('Проверяем полученный id', ()=>{
-            expect(producer.producerId).to.equal(producerId);
+            assert.equal(producer.producerId, producerId);
         });
     });
 
