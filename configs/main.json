@@ -15,7 +15,7 @@
     "password": "111",
     "host": "localhost",
     "port": 5432,
-    "maxClient": 10,
+    "max": 10,
     "idleTimeoutMillis": 30000,
     "ssl" : false
   },

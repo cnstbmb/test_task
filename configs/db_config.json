@@ -1,0 +1,45 @@
+{
+  "dev": {
+    "driver": "pg",
+    "user": "cnstbmb",
+    "password": "111",
+    "host": "localhost",
+    "database": "cnstbmb_db",
+    "schema": "public"
+  },
+
+  "test": {
+    "driver": "pg",
+    "user": "cnstbmb",
+    "password": "111",
+    "host": "localhost",
+    "database": "cnstbmb_db",
+    "schema": "public"
+  },
+
+  "prod": {
+    "driver": "pg",
+    "user": "cnstbmb",
+    "password": "111",
+    "host": "localhost",
+    "database": "cnstbmb_db",
+    "schema": "public"
+  },
+
+  "pg": {
+    "driver": "pg",
+    "user": "cnstbmb",
+    "password": "111",
+    "host": "localhost",
+    "database": "cnstbmb_db",
+    "schema": "public"
+  },
+
+  "mongo": {
+    "driver": "mongodb",
+    "database": "my_db",
+    "host": "localhost"
+  },
+
+  "other": "postgres://uname:pw@server.com/dbname"
+}

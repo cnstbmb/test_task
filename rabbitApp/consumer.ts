@@ -36,7 +36,8 @@ class Consumer{
         if(minute > 60){
             let message: string = 'По непонятной причине, this.getMinutes() вернул значение больше 60! ' +
                 'устанавливаем значение 60.такой момент маловероятен.';
-            postgres.write("INSERT INTO sys_error (error_text) VALUES (\'"+message+"\')");
+            let consumerTime: number = Date.now();
+            postgres.addToSysErrorPacket(message, consumerTime);
             minute = 60;
         }
         let intermediateValue = minute / this.interval;

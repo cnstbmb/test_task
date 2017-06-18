@@ -61,11 +61,10 @@ class Rabbit{
             channel.prefetch(1);
             console.log('получаем сообщения сообщения из очереди №'+queue, Date());
             channel.consume(queue, (msg: any)=>{
-                this.message = msg.content.toString();
+                this.message = msg.content;
                 this.producerTime = msg.properties.timestamp;
                 let consumerTime: number = Date.now();
-                postgres.write("INSERT INTO messages (producer_time, consumer_time, message) " +
-                    "VALUES ("+this.producerTime+", "+consumerTime+", \'"+this.message+"\');");
+                postgres.addToMessagePacket(this.producerTime, consumerTime, this.message);
                 channel.ack(msg);
             }, {'consumerTag': this.consumerTag});
         });

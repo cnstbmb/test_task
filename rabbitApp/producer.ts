@@ -42,7 +42,8 @@ class DataHandler{
             let type : string = keys[key];
             if(data[key] === null || typeof data[key] !== type) {
                 let message: string = "Ошибка. Тип переменной `" + key + "` не соответствует заданному стандарту";
-                postgres.write("INSERT INTO error_events (event_log, event_reason) VALUES (\'"+this.query+"\', \'"+message+"\');");
+                let consumerTime: number = Date.now();
+                postgres.addToErrorEventsPacket(consumerTime, this.query, message);
                 return false;
             }
         }
@@ -51,19 +52,20 @@ class DataHandler{
         let idCheck : boolean = id > 0;
         if(!idCheck) {
             let message: string = "Ошибка. `id`=" + String(id) + " не должен быть отрицательным числом";
-            postgres.write("INSERT INTO error_events (event_log, event_reason) VALUES (\'" + this.query + "\', \'" + message + "\');");
+            let consumerTime: number = Date.now();
+            postgres.addToErrorEventsPacket(consumerTime, this.query, message);
             return false;
         }
 
-        let minRange : number = config.groupRange.min;
-        let maxRange : number = config.groupRange.max;
-        let group : number = data.group;
+        let minRange: number, maxRange: number, group : number;
+        [minRange, maxRange, group] = [config.groupRange.min, config.groupRange.max, data.group];
         let regionCheck : boolean = group >= minRange && group <= maxRange;
 
         if(!regionCheck) {
             let message: string = "Ошибка. group=`" + String(group) + "` выходит за пределы от `"
                 + String(minRange) + "` до `" + String(maxRange) + "`";
-            postgres.write("INSERT INTO error_events (event_log, event_reason) VALUES (\'"+this.query+"\', \'"+message+"\');");
+            let consumerTime: number = Date.now();
+            postgres.addToErrorEventsPacket(consumerTime, this.query, message);
             return false;
         }
 
@@ -72,7 +74,8 @@ class DataHandler{
 
         if(!textCheck) {
             let message : string = "Ошибка. text не может быть пустой строкой.";
-            postgres.write("INSERT INTO error_events (event_log, event_reason) VALUES (\'"+this.query+"\', \'"+message+"\');");
+            let consumerTime: number = Date.now();
+            postgres.addToErrorEventsPacket(consumerTime, this.query, message);
             return false;
         }
 
@@ -96,8 +99,9 @@ class DataHandler{
             this.data = JSON.parse(this.query);
             this.brokenData = false;
         }catch (e){
-            let error : any = JSON.stringify(errorParser.parse(e));
-            postgres.write("INSERT INTO sys_error (error_text) VALUES (\'"+error+"\')");
+            let error : string = JSON.stringify(errorParser.parse(e));
+            let consumerTime: number = Date.now();
+            postgres.addToSysErrorPacket(error, consumerTime);
             this.brokenData = true;
         }
 
@@ -112,7 +116,8 @@ class DataHandler{
         let message : string;
         if (this.brokenData){
             message = "Ошибка. Не могу распрсить входные данные, проверьте пожалуйста `" + this.query + "`";
-            postgres.write("INSERT INTO error_events (event_log, event_reason) VALUES (\'"+this.query+"\', \'"+message+"\');");
+            let consumerTime: number = Date.now();
+            postgres.addToErrorEventsPacket(consumerTime, this.query, message);
             return false;
         }
 
@@ -122,7 +127,8 @@ class DataHandler{
         if(data_keys !== 3){
             message =  'Полученные массив не соответствует заданному стандарту ' +
                 '{id: number, group: number, text: string}. Операция отклонена.';
-            postgres.write("INSERT INTO error_events (event_log, event_reason) VALUES (\'"+this.query+"\', \'"+message+"\');");
+            let consumerTime: number = Date.now();
+            postgres.addToErrorEventsPacket(consumerTime, this.query, message);
             return false;
         }
 
@@ -147,7 +153,8 @@ class DataHandler{
         let queue: string = String(this.data.group);
 
         rabbit.publishMessage(queue, data);
-        postgres.write("INSERT INTO event_counter (producer_name) VALUES (\'"+this.producerId+"\');");
+        let consumerTime: number = Date.now();
+        postgres.addToEventCounterPacket(this.producerId, consumerTime);
         return true;
     }
 }
