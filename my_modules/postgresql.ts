@@ -17,6 +17,7 @@ interface dbResponse {
 class Postgresql{
 
     client: any;
+    timeOutInterval: number = 10000;
 
     private messages: string;
     private errorEvents: string;
@@ -95,24 +96,42 @@ class Postgresql{
 
     addToMessagePacket(producerTime: number, consumerTime: number, message: string):void{
         this.messages += producerTime.toString() + "|" + consumerTime.toString() + "|" + message + '\n';
+        // this.copyToDB(this.timeOutMessagesId, this.messages, 'messages');
         this.writeMessages();
     }
 
     addToErrorEventsPacket(consumerTime: number, query: string, message: string):void{
         this.errorEvents +=  consumerTime.toString() + '|' + query  + '|' + message + '\n';
+        // this.copyToDB(this.timeOutErrorEventsId, this.errorEvents, 'error_events(event_date, event_log, event_reason)');
         this.writeErrorEvents();
     }
 
     addToEventCounterPacket(producerId: string, consumerTime: number):void{
         this.eventCounter += producerId + '|' + consumerTime.toString() + '\n';
+        // this.copyToDB(this.timeOutEventCounterId, this.eventCounter, 'event_counter');
         this.writeEventCounter();
     }
 
 
     addToSysErrorPacket(error:string, consumerTime: number):void{
         this.sysError+= error + '|'  + consumerTime.toString() + '\n';
+        // this.copyToDB(this.timeOutSysErrorId, this.sysError, 'sys_error');
         this.writeSysError();
     }
+
+    // private copyToDB(timeoutId:any, messages:string, table: string):void{
+    //     console.log(timeoutId);
+    //     console.log(typeof timeoutId);
+    //     if(timeoutId == undefined || timeoutId._called == true){
+    //         timeoutId = setTimeout(()=>{
+    //             let messagesCopy: string = messages;
+    //             messages = '';
+    //             this.copyDataPacket(table, messagesCopy);
+    //             clearTimeout(timeoutId);
+    //         }, this.timeOutInterval);
+    //     }
+    //     console.log(timeoutId);
+    // }
 
     private writeMessages():void{
         if (this.timeOutMessagesId == undefined || this.timeOutMessagesId._called == true){
@@ -121,7 +140,7 @@ class Postgresql{
                 this.messages = '';
                 this.copyDataPacket('messages', messages);
                 clearTimeout(this.timeOutMessagesId);
-            }, 10000);
+            }, this.timeOutInterval);
         }
     };
 
@@ -132,7 +151,7 @@ class Postgresql{
                 this.errorEvents = '';
                 this.copyDataPacket('error_events(event_date, event_log, event_reason)', errorEvents);
                 clearTimeout(this.timeOutErrorEventsId);
-            }, 10000);
+            }, this.timeOutInterval);
         }
     };
 
@@ -140,10 +159,10 @@ class Postgresql{
         if (this.timeOutEventCounterId == undefined || this.timeOutEventCounterId._called == true){
             this.timeOutEventCounterId = setTimeout(()=>{
                 let eventCounter: string = this.eventCounter;
-                this.errorEvents = '';
+                this.eventCounter = '';
                 this.copyDataPacket('event_counter', eventCounter);
                 clearTimeout(this.timeOutEventCounterId);
-            }, 10000);
+            }, this.timeOutInterval);
         }
     };
 
@@ -152,10 +171,10 @@ class Postgresql{
         if (this.timeOutSysErrorId == undefined || this.timeOutSysErrorId._called == true){
             this.timeOutSysErrorId = setTimeout(()=>{
                 let sysError: string = this.sysError;
-                this.errorEvents = '';
+                this.sysError = '';
                 this.copyDataPacket('sys_error', sysError);
                 clearTimeout(this.timeOutSysErrorId);
-            }, 10000);
+            }, this.timeOutInterval);
         }
     };
 

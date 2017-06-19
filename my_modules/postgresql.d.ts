@@ -1,5 +1,6 @@
 declare class Postgresql {
     client: any;
+    timeOutInterval: number;
     private messages;
     private errorEvents;
     private eventCounter;

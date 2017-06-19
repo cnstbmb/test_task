@@ -18,9 +18,7 @@ class Consumer{
 
     constructor(){
         this.date = new Date();
-        this.minute = this.date.getMinutes();
-        this.sec = this.date.getSeconds();
-        this.msec = this.date.getMilliseconds();
+        [this.minute , this.sec, this.msec] = [this.date.getMinutes(), this.date.getSeconds(), this.date.getMilliseconds()];
 
         this.timestamp = (this.minute*60*1000) + (this.sec*1000) + this.msec;
         this.determineTimeGroup();
@@ -54,7 +52,7 @@ class Consumer{
 
         console.log('Оставшееся время мониторим группу №', this.timeGroup, Date());
         this.rabbit.startReceivingMessages(String(this.timeGroup));
-        this.timeGroup++;
+        this.checkAndAutoIncrementGroup();
         return setTimeout(()=>{this.startSetInterval()}, startTime);
     }
 
@@ -71,11 +69,10 @@ class Consumer{
     startSetInterval():void{
         this.rabbit.stopReceivingMessages();
         this.rabbit.startReceivingMessages(String(this.timeGroup));
-        this.checkAndAutoIncrementGroup();
         this.intervalId = setInterval(()=>{
+            this.checkAndAutoIncrementGroup();
             this.rabbit.stopReceivingMessages();
             this.rabbit.startReceivingMessages(String(this.timeGroup));
-            this.checkAndAutoIncrementGroup();
         }, this.interval*this.minAtmsec);
     }
 }

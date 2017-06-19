@@ -1,7 +1,6 @@
 import url = require('url');
 import Postgres = require('../my_modules/postgresql');
 import * as Url from "url";
-import errorParser = require('error-stack-parser');
 
 const postgres = new Postgres();
 const config = require('../configs/main.json');
@@ -99,9 +98,6 @@ class DataHandler{
             this.data = JSON.parse(this.query);
             this.brokenData = false;
         }catch (e){
-            let error : string = JSON.stringify(errorParser.parse(e));
-            let consumerTime: number = Date.now();
-            postgres.addToSysErrorPacket(error, consumerTime);
             this.brokenData = true;
         }
 
