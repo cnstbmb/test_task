@@ -1,3 +1,4 @@
+import _ = require('underscore');
 import url = require('url');
 import Postgres = require('../my_modules/postgresql');
 import * as Url from "url";
@@ -39,7 +40,7 @@ class DataHandler{
 
         for(let key in keys){
             let type : string = keys[key];
-            if(data[key] === null || typeof data[key] !== type) {
+            if(_.isNull(data[key]) || typeof data[key] !== type) {
                 let message: string = "Ошибка. Тип переменной `" + key + "` не соответствует заданному стандарту";
                 let consumerTime: number = Date.now();
                 postgres.addToErrorEventsPacket(consumerTime, this.query, message);

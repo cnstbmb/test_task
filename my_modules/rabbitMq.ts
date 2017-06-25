@@ -6,17 +6,6 @@ const shortid = require('shortid');
 const Amqplib = require("amqplib/callback_api");
 const config = require('../configs/main.json');
 const rabbitMQConfig: object = Object.assign({}, config.rabbitMqConfig);
-// const rabbitMQConfig = {
-//     host: config.rabbitMqConfig.host,
-//     port: config.rabbitMqConfig.port,
-//     login: config.rabbitMqConfig.login,
-//     password: config.rabbitMqConfig.passwpord,
-//     connectionTimeout: config.rabbitMqConfig.connectionTimeout,
-//     authMechanism: config.rabbitMqConfig.authMechanism,
-//     vhost: config.rabbitMqConfig.vhost,
-//     noDelay: config.rabbitMqConfig.noDelay,
-//     ssl: config.rabbitMqConfig.ssl
-// };
 shortid.characters(config.shortidCharacters);
 
 class Rabbit{

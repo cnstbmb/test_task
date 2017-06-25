@@ -186,7 +186,7 @@ class Postgresql{
             let stream:any = this.client.query(copyFrom('COPY '+table+' FROM STDIN WITH (DELIMITER "|")'));
             let stdin:any = str(data);
 
-            stream.on('error', (err:any)=>{
+            stream.on('error', (err:Error)=>{
                 console.log('messages stream error!');
                 console.log(err);
             });
